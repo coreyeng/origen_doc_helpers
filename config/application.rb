@@ -24,6 +24,11 @@ class OrigenDocHelpersApplication < Origen::Application
     #:files => ["lib", "config/application.rb"],
   }
 
+  config.shared = {
+    :patterns => "pattern",
+    :command_launcher => "config/shared_commands.rb"
+  }
+
   # To automatically deploy your documentation after every tag use this code
   def after_release_email(tag, note, type, selector, options)
     command = "origen web compile --remote"
