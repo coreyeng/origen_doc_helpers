@@ -11,35 +11,7 @@ module OrigenDocHelpers
       # Generates the navbar text for patterns and its modules.
       # This requires that the sitemap is already generated.
       # The default sitemap will be at: Origen.app.root/templates/web/origen_doc_helpers/patdoc/
-      def self.navbar(options={})
-=begin        
-        def self.print_group(name, group, options={})
-          html = []
-          
-          if submodule.is_a?(Hash)
-            html << '<li class="dropdown-submenu">'
-            html << "<a class=\"test\" tabindex=\"-1\" href=\"#\"><span class=\"glyphicon glyphicon-menu-right\" style=\"float:right;\"></span> <span style=\"display: inline-block;margin-right: 20px;\">#{name}</span> </a>"
-            html << '<ul class="dropdown-menu">'
-            
-            #html << "<li><a href=\"#\">#{name}</a></li>"
-            #html << '<li><a href="#">2nd level dropdown</a></li>'
-            
-            #
-            #this_level = self.sort_keys(submodule)
-            
-            submodule.each do |k, v|
-              html += self.print_submodule(k, v, options)
-            end
-            
-            html << '</ul>'
-            html << '</li>'
-          else
-            html << "<li><a href=\"#\">#{name}</a></li>"
-          end
-          
-          html
-        end
-=end        
+      def self.navbar(options={}) 
         def self.print_group(name, group, options)
           html = []
           

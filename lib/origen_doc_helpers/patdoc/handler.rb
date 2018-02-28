@@ -24,13 +24,7 @@ module OrigenDocHelpers
         # Based off the paths, find all given files.
         #files = []
         @root = Pathname.new("#{Origen.app.root}/pattern")
-        @files = build_filelist(Pathname.new("#{Origen.app.root}/pattern"))
-        show_status
         
-        @headers = build_patdoc_structure(@files)
-        show_patdoc
-        
-        print_sitemap
         #print_listing_files
         #JSON.pretty_print(files)
         #files.pp
@@ -74,7 +68,7 @@ module OrigenDocHelpers
                   no_header: true,
                   file: child,
                   root: @root,
-                  name: child.basename,
+                  name: File.basename(child, File.extname(child)),
                   path: child.dirname,
                 )
                 OrigenDocHelpers::PatDoc._reset_header_array
@@ -85,14 +79,16 @@ module OrigenDocHelpers
                 file: child,
                 exception: e,
                 root: @root,
-                name: child.basename,
+                name: File.basename(child, File.extname(child)),
                 path: child.dirname,
               )
               OrigenDocHelpers::PatDoc._reset_header_array
-              #raise e
+              raise e
             end
           end
         end
+        @files = return_hash
+        
         return_hash
       end
       
@@ -157,11 +153,17 @@ module OrigenDocHelpers
               # It is assumed this is an error by the user and these should be fixed. Unless explicitly skipped,
               # we will add a webpage to them.
               # In this case, we will treat these as patterns, not modules.
-              struct[name.each_filename.to_a.last] = headers
+              #struct[name.each_filename.to_a.last] = headers
+              struct[headers.name] = headers
             elsif headers.is_a?(Array)
               # Set of headers here. Exact pattern names and set it to the header object.
               headers.each do |h|
-                struct[Pathname.new(h.name).each_filename.to_a.last] = h
+                # If the header is not be documented, skip it.
+                unless h.no_doc?
+                  # If this name conflicts with another, complain about it.
+                  struct[h.name] = h
+                  #struct[Pathname.new(h.name).each_filename.to_a.last] = h
+                end
               end
             elsif headers.is_a?(Hash)
               # This is a submodule. Shift the context over and rebuild the context.
@@ -170,6 +172,7 @@ module OrigenDocHelpers
               struct[root] = build_module(root, headers, opts)
             end
           end
+          @headers = struct
           struct
         end
 =begin

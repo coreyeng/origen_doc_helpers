@@ -81,5 +81,17 @@ module OrigenDocHelpers
     def self.read_sitemap(options={})
       JSON.parse(File.read(sitemap.to_s))
     end
+    
+    def self.patdoc_generating?
+      @patdoc_generating ||= false
+    end
+    
+    def self.start_patdoc_generating
+      @patdoc_generating = true
+    end
+    
+    def self.stop_patdoc_generating
+      @patdoc_generating = false
+    end
   end
 end

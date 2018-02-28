@@ -14,6 +14,7 @@ module OrigenDocHelpers
           #@name = name.demodulize
           @value = nil
           @options = nil
+          @tag_set = false
           @name = self.class.name.demodulize
           
           # Define the methods on the tag.
@@ -28,12 +29,31 @@ module OrigenDocHelpers
         def generate(options={})
         end
         
+        # The default to_html is pretty boring. Just print the name and the value.
+        def to_html(options={})
+          "<strong>#{name}</strong>: #{array_to_html(value)}"
+        end
+        
         #def value
         #  @value
         #end
         
         def setup(*args, &block) #value, options={}, &block)
           @value = args[0]
+          @tag_set = true
+          @value
+        end
+        
+        def array_to_html(arr, options={})
+          if arr.is_a?(Array)
+            arr.join('<br>')
+          else
+            arr
+          end
+        end
+        
+        def tag_set?
+          @tag_set
         end
       end
     
@@ -50,6 +70,8 @@ module OrigenDocHelpers
         
         def generate
         end
+        
+        # For a single tag, merging the other tag simply does nothing.
         
         #def setup(value, options={}, &block)
         #  @value = value
@@ -71,8 +93,15 @@ module OrigenDocHelpers
         end
         
         def setup(value, options={}, &block)
+          @tag_set = true
           @value << value[0]
           @options << options[1]
+        end
+        
+        # Merging a multi-tag does not override it. Instead, it prepends whatever the
+        # value of other_tag is to the current value.
+        def merge!(other_tag)
+          self.value.prepend(other_tag.value)
         end
       end
       
@@ -119,6 +148,24 @@ module OrigenDocHelpers
       end
       
       class TestStep < MultiTag
+        def to_html(optios={})
+          html = []
+          html << '<div class="panel panel-default">'
+          html << '<div class="panel-heading">This pattern contains the following Steps:</div>'
+          html << '<div class="panel-body">'
+          html << '<ul class="list-group">'
+          
+          @value.each do |step|
+            html << '<li class="list-group-item">'
+            html << step
+            html << '</li>'
+          end
+          
+          html << '</ul>'
+          html << '</div>'
+          html << '</div>'
+          html.join("\n")
+        end
       end
       
       class DigitalCapture < MultiTag
@@ -129,13 +176,17 @@ module OrigenDocHelpers
         METHODS = [:req, :reqs, :requirements]
       end
       
+      class Assumption < MultiTag
+      end
+      
       self.add_tag(Department)
       self.add_tag(Author)
-      self.add_tag(TestStep)
-      self.add_tag(DigitalCapture)
       self.add_tag(Email)
       self.add_tag(Purpose)
+      self.add_tag(TestStep)
+      self.add_tag(DigitalCapture)
       self.add_tag(Requirement)
+      self.add_tag(Assumption)
       
       # These method will be available when including the module.
       def has_tag?(tag)

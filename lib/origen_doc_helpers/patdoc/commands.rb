@@ -27,8 +27,17 @@ module OrigenDocHelpers
           exit
         end
       end.parse!
+      OrigenDocHelpers::PatDoc.start_patdoc_generating
       
-      OrigenDocHelpers::PatDoc.handler(ARGV, options)
+      handler = OrigenDocHelpers::PatDoc.handler!(ARGV, options)
+      files = handler.build_filelist(Pathname.new("#{Origen.app.root}/pattern"))
+      handler.show_status
+
+      handler.build_patdoc_structure(files)
+      handler.show_patdoc
+
+      handler.print_sitemap
+      OrigenDocHelpers::PatDoc.stop_patdoc_generating
     end
     
     # Prints the help command.

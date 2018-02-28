@@ -11,6 +11,8 @@ class OrigenDocHelpersApplication < Origen::Application
   config.web_domain = "http://origen-sdk.org/doc_helpers"
   config.disqus_shortname = "origen-sdk"
 
+  add_config_attribute(:patdoc_parent_header)
+
   config.semantically_version = true
 
   config.lint_test = {
